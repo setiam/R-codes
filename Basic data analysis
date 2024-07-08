@@ -1,59 +1,14 @@
+////setting the working directory///
+setwd ("C:\\Chisquares\\renv")
+
+////importing data///
+///Importing from csv, dta, sav///
+miriam <- read_dta() 
 miriam <- read.csv(file.choose())
-miriam
-ols=lm(ROA~ROE+TOBIN,data = miriam)
-ols
-summary(ols)
-#DAY2
-dat<-iris #Load the dataset and name it dat
-dat       #View dataset
-head(dat)  #first 6 observations
-summary(dat) # descriptive statistics
-min(dat$Sepal.Length)
-max(dat$Sepal.Width)
-mean(dat$Sepal.Length)
-library(pastecs)     #package for more descriptive statistic
-stat.desc(dat)   #More descriptive statistics
-stat.desc(dat$Sepal.Length)
-sd(dat$Sepal.Length)
-var(dat$Sepal.Length)
-library(ggplot2)
-hist(dat$Sepal.Length)
-hist(dat$Sepal.Width,col="red")
-library(lattice)
-dotplot(dat$Sepal.Width~dat$Sepal.Length)
-library (car)
-library(MASS)
-mimie=(str(Cars93)) #string values inside
-#creating a data frame
-car.data<-data.frame(Cars93$AirBags, Cars93$Type)
-#creating tables
-car.data<-table(Cars93$AirBags, Cars93$Type)
-car.data
-#perform a chi square test
-print(chisq.test(car.data))
-#creating relationship models without existing data set
-x<-c(151,174,138,186,128,136,179,163,152,131)
-y<-c(63,81,56,91,47,57,76,72,62,48)
-z<-c(14, 17, 25, 80, 86, 120, 45, 55, 77,99)
-mydata<-data.frame(x,y,z)
-mydata
-mydata1<-table(mydata)
-mydata1
-#linear models
-mmodel=lm(y~x+z,data=mydata)
-mmodel
-summary(mmodel)
-#Graph
-plot(x,y,col="blue", main="height& weight",abline(lm(x~y)), cex=1.3, pch=16,xlab="weight in kg", ylab="height in cm")
-plot(x,y,col="blue", main="height& weight",abline(lm(x~y)), xlab="weight in kg", ylab="height in cm")
-#correlation analysis using the function cor
-cor(x,y)
-cor(x,y, method = "kendall")
-#when there is missing data
-cor(x,y, methods="pearson", use="complete.obs")
-miriam <- read.csv(file.choose())
-y
-# preparing the working environment
+miriam <- read_dta(file.choose())
+miriam <- read_sav(file.choose())
+
+////preparing the working environment////
 rm(list = ls())
 # installing needed packages
 install.packages("dplyr")
@@ -62,19 +17,56 @@ install.packages("lubridate")
 library(lubridate)
 install.packages("tidyverse")
 library(tidyverse)
+To import dta and sav datasets, install and library the "heaven" package
+
+#creating relationship models without existing data set
+x<-c(151,174,138,186,128,136,179,163,152,131)
+y<-c(63,81,56,91,47,57,76,72,62,48)
+z<-c(14, 17, 25, 80, 86, 120, 45, 55, 77,99)
+mydata<-data.frame(x,y,z)
+mydata
+mydata1<-table(mydata)
+mydata1
 
 
-#setting the working directory
-setwd ("C:\\Chisquares\\renv")
-
-#Loading the data
-covid <- read.csv(file.choose())
-
+/// Basic descriptive analysis///
+head(dat)  #first 6 observations
+summary(dat) # descriptive statistics
+min(dat$Sepal.Length)
+max(dat$Sepal.Width)
+mean(dat$Sepal.Length)
+library(pastecs) #package for more descriptive statistic
+stat.desc(dat)   #More descriptive statistics
+stat.desc(dat$Sepal.Length)
+sd(dat$Sepal.Length)
+var(dat$Sepal.Length)
+#creating a data frame
+car.data<-data.frame(Cars93$AirBags, Cars93$Type)
 # Number of row
 nrow(covid)
 
 #Number of colums
 ncol(covid)
+
+# Number of unique characters
+n_distinct(covid$countriesAndTerritories)
+
+////creating tables////
+car.data<-table(Cars93$AirBags, Cars93$Type)
+car.data
+table(mydata$age)
+  xtabs(~ CVD + Sex, data=mydata)
+  xtabs(~ CVD + Hypertension, data=mydata)
+  xtabs(~ CVD + diabetes, data=mydata)
+  xtabs(~ CVD + Pulse, data=mydata)
+  xtabs(~ CVD + Bodymass, data=mydata)
+  xtabs(~ CVD + age, data=mydata)
+
+
+
+
+
+///Working with missing values///
 
 # Number of missing variables
 print("position of missing values")
@@ -88,10 +80,7 @@ sapply(covid, function(x) which(is.na(x)))
 print("Count of missing values by column wise")
 sapply(covid, function(x) sum(is.na(x)))
 
-# Number of unique countires
-n_distinct(covid$countriesAndTerritories)
-
-# Number of cases by date
+//// working with dates////
 
 #working with dates
 pacman::p_load(
@@ -102,8 +91,7 @@ pacman::p_load(
   tidyverse,  # data management and visualization  
   rio)        # data import/export
 
-summary(mydata)
-table(mydata$Sex)
+//// Coding Sting variables///
 colnames(mydata) <- c(
   "Age",
   "Sex", 
@@ -162,18 +150,40 @@ colnames(mydata) <- c(
                        labels = c("optimal", "normal", "high normal", "G1 hyp", "G2 hyp", "G2 hyp"))
   mydata$dia <- factor(mydata$dia, levels = c(1,2,3,4,5,6),
                        labels = c("optimal", "normal", "high normal", "G1 hyp", "G2 hyp", "G2 hyp"))
-  
-  table(mydata$age)
-  xtabs(~ CVD + Sex, data=mydata)
-  xtabs(~ CVD + Hypertension, data=mydata)
-  xtabs(~ CVD + diabetes, data=mydata)
-  xtabs(~ CVD + Pulse, data=mydata)
-  xtabs(~ CVD + Bodymass, data=mydata)
-  xtabs(~ CVD + age, data=mydata)
-  
-  model <- glm(CVD~age+Sex+Bodymass+Pulse+Hypertension+diabetes+sys+dia, family="binomial", data=mydata)
+
+
+////graphical presentation////
+library(ggplot2)
+hist(dat$Sepal.Length)
+hist(dat$Sepal.Width,col="red")
+library(lattice)
+dotplot(dat$Sepal.Width~dat$Sepal.Length)
+plot(x,y,col="blue", main="height& weight",abline(lm(x~y)), cex=1.3, pch=16,xlab="weight in kg", ylab="height in cm")
+plot(x,y,col="blue", main="height& weight",abline(lm(x~y)), xlab="weight in kg", ylab="height in cm")
+
+//// inferential analysis////
+#perform a chi square test
+print(chisq.test(car.data))
+
+#linear models
+mmodel=lm(y~x+z,data=mydata)
+mmodel
+summary(mmodel)
+
+or
+ols=lm(ROA~ROE+TOBIN,data = miriam)
+ols
+summary(ols)
+model <- glm(CVD~age+Sex+Bodymass+Pulse+Hypertension+diabetes+sys+dia, family="binomial", data=mydata)
   summary(model)
-  
+
+#correlation analysis using the function cor
+cor(x,y)
+cor(x,y, method = "kendall")
+#when there is missing data
+cor(x,y, methods="pearson", use="complete.obs")
+
+/// Using dataset for predictive analysis////  
   #Use 70% of dataset as training set and remaining 30% as testing set
   sample <- sample(c(TRUE, FALSE), nrow(mydata), replace=TRUE, prob=c(0.7,0.3))
   train <- mydata[sample, ]
